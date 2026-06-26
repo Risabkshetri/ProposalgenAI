@@ -1,983 +1,735 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mobile App Development Proposal</title>
-
-<style>
-  /* ── Reset & Base ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --ink:        #0D0F14;
-    --ink-light:  #4A4E5C;
-    --gold:       #B8975A;
-    --gold-light: #D4B07A;
-    --cream:      #FAF8F4;
-    --white:      #FFFFFF;
-    --rule:       #E4DED4;
-    --accent-bg:  #F4F0E8;
-
-    --display: Georgia, 'Times New Roman', serif;
-    --body:    Georgia, 'Times New Roman', serif;
-    --mono:    'Courier New', Courier, monospace;
-  }
-
-  html { font-size: 16px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-  body {
-    font-family: var(--body);
-    color: var(--ink);
-    background: var(--cream);
-    line-height: 1.6;
-  }
-
-  /* ── Page Wrapper (for print simulation) ── */
-  .page {
-    width: 794px;
-    margin: 0 auto;
-    background: var(--white);
-  }
-
-  /* ── Cover Page ── */
-  .cover {
-    height: 1122px;
-    background: var(--ink);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 72px 64px;
-    position: relative;
-    overflow: hidden;
-    page-break-after: always;
-  }
-
-  .cover::before {
-    content: '';
-    position: absolute;
-    top: -120px; right: -120px;
-    width: 500px; height: 500px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(184,151,90,0.18) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .cover::after {
-    content: '';
-    position: absolute;
-    bottom: 80px; left: -80px;
-    width: 360px; height: 360px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(184,151,90,0.10) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  .cover-eyebrow {
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-
-  .cover-center {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .cover-label {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold-light);
-    opacity: 0.7;
-    margin-bottom: 20px;
-  }
-
-  .cover-title {
-    font-family: var(--display);
-    font-size: 68px;
-    font-weight: 300;
-    line-height: 1.05;
-    color: var(--white);
-    letter-spacing: -0.01em;
-    margin-bottom: 8px;
-  }
-
-  .cover-title em {
-    font-style: italic;
-    color: var(--gold-light);
-  }
-
-  .cover-rule {
-    width: 72px;
-    height: 1px;
-    background: var(--gold);
-    margin: 36px 0;
-  }
-
-  .cover-sub {
-    font-family: var(--body);
-    font-size: 13px;
-    font-weight: 300;
-    color: rgba(255,255,255,0.55);
-    line-height: 1.8;
-    max-width: 340px;
-    letter-spacing: 0.01em;
-  }
-
-  .cover-parties {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    border-top: 1px solid rgba(255,255,255,0.12);
-    padding-top: 36px;
-  }
-
-  .cover-party-label {
-    font-family: var(--mono);
-    font-size: 8px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 14px;
-  }
-
-  .cover-party-name {
-    font-family: var(--display);
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--white);
-    line-height: 1.2;
-    margin-bottom: 10px;
-  }
-
-  .cover-party-detail {
-    font-size: 11px;
-    color: rgba(255,255,255,0.45);
-    line-height: 2;
-    letter-spacing: 0.01em;
-  }
-
-  /* ── Inner Pages ── */
-  .inner-page {
-    padding: 72px 64px;
-    page-break-after: always;
-    position: relative;
-  }
-
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 56px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .page-header-brand {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-
-  .page-header-section {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink-light);
-    opacity: 0.6;
-  }
-
-  /* ── Section Headings ── */
-  .section-number {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  h2 {
-    font-family: var(--display);
-    font-size: 46px;
-    font-weight: 300;
-    line-height: 1.1;
-    color: var(--ink);
-    letter-spacing: -0.01em;
-    margin-bottom: 28px;
-  }
-
-  h2 em { font-style: italic; color: var(--gold); }
-
-  h3 {
-    font-family: var(--display);
-    font-size: 26px;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 14px;
-    margin-top: 36px;
-  }
-
-  p {
-    font-size: 13.5px;
-    line-height: 1.85;
-    color: var(--ink-light);
-    margin-bottom: 18px;
-    font-weight: 300;
-  }
-
-  /* ── Greeting Page ── */
-  .greeting-body {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    align-items: start;
-  }
-
-  .greeting-quote {
-    font-family: var(--display);
-    font-size: 32px;
-    font-style: italic;
-    font-weight: 300;
-    color: var(--ink);
-    line-height: 1.35;
-    padding-left: 24px;
-    border-left: 2px solid var(--gold);
-  }
-
-  .toc {
-    margin-top: 32px;
-  }
-
-  .toc-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--rule);
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--ink-light);
-    letter-spacing: 0.03em;
-  }
-
-  .toc-dot {
-    width: 5px; height: 5px;
-    border-radius: 50%;
-    background: var(--gold);
-    flex-shrink: 0;
-  }
-
-  .toc-item span:last-child {
-    margin-left: auto;
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--gold);
-    opacity: 0.7;
-  }
-
-  .signature-block {
-    margin-top: 48px;
-    padding-top: 24px;
-    border-top: 1px solid var(--rule);
-    font-size: 12px;
-    color: var(--ink-light);
-    line-height: 2;
-  }
-
-  .signature-name {
-    font-family: var(--display);
-    font-size: 20px;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 2px;
-  }
-
-  /* ── Process / Phase Cards ── */
-  .phase-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-top: 36px;
-  }
-
-  .phase-card {
-    background: var(--accent-bg);
-    padding: 28px;
-    border-top: 2px solid var(--gold);
-  }
-
-  .phase-card-num {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    color: var(--gold);
-    margin-bottom: 12px;
-  }
-
-  .phase-card-title {
-    font-family: var(--display);
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 10px;
-  }
-
-  .phase-card-desc {
-    font-size: 12px;
-    line-height: 1.8;
-    color: var(--ink-light);
-    font-weight: 300;
-  }
-
-  /* Bullet list */
-  .feature-list {
-    margin: 16px 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .feature-list li {
-    font-size: 12.5px;
-    color: var(--ink-light);
-    padding: 8px 0 8px 20px;
-    border-bottom: 1px solid var(--rule);
-    position: relative;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  .feature-list li::before {
-    content: '→';
-    position: absolute; left: 0;
-    color: var(--gold);
-    font-size: 11px;
-  }
-
-  /* ── Timeline Page ── */
-  .timeline-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 36px;
-  }
-
-  .timeline-table thead tr {
-    border-bottom: 2px solid var(--ink);
-  }
-
-  .timeline-table thead th {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--ink);
-    padding: 10px 16px 14px;
-    text-align: left;
-  }
-
-  .timeline-table tbody tr {
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .timeline-table tbody tr:last-child { border-bottom: none; }
-
-  .timeline-table tbody td {
-    padding: 18px 16px;
-    font-size: 13px;
-    font-weight: 300;
-    color: var(--ink-light);
-  }
-
-  .timeline-table tbody td:first-child {
-    font-weight: 500;
-    color: var(--ink);
-  }
-
-  .timeline-table tbody td:last-child {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--gold);
-  }
-
-  /* ── Expenses / Budget ── */
-  .budget-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 36px;
-  }
-
-  .budget-table thead tr {
-    background: var(--ink);
-  }
-
-  .budget-table thead th {
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    padding: 14px 20px;
-    text-align: left;
-  }
-
-  .budget-table thead th:last-child { text-align: right; }
-
-  .budget-table tbody tr {
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .budget-table tbody td {
-    padding: 18px 20px;
-    font-size: 13px;
-    font-weight: 300;
-    color: var(--ink-light);
-  }
-
-  .budget-table tbody td:last-child {
-    text-align: right;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--ink);
-  }
-
-  .budget-total {
-    margin-top: 0;
-    background: var(--accent-bg);
-  }
-
-  .budget-total td {
-    font-weight: 600 !important;
-    font-size: 14px !important;
-    color: var(--ink) !important;
-    padding: 20px !important;
-    border-top: 2px solid var(--gold) !important;
-  }
-
-  .budget-total td:last-child {
-    font-family: var(--mono);
-    color: var(--gold) !important;
-  }
-
-  .payment-note {
-    background: var(--accent-bg);
-    border-left: 3px solid var(--gold);
-    padding: 20px 24px;
-    margin-top: 28px;
-    font-size: 12px;
-    line-height: 1.8;
-    color: var(--ink-light);
-  }
-
-  .payment-note strong {
-    display: block;
-    font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 8px;
-  }
-
-  /* ── Agreement Page ── */
-  .agreement-intro {
-    background: var(--ink);
-    padding: 40px 48px;
-    margin-bottom: 48px;
-  }
-
-  .agreement-intro p {
-    color: rgba(255,255,255,0.6);
-    font-size: 13px;
-    font-weight: 300;
-    line-height: 1.9;
-    margin: 0;
-  }
-
-  .sig-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    margin-top: 48px;
-  }
-
-  .sig-block {}
-
-  .sig-party-label {
-    font-family: var(--mono);
-    font-size: 8px;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 20px;
-  }
-
-  .sig-party-name {
-    font-family: var(--display);
-    font-size: 24px;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 4px;
-  }
-
-  .sig-party-company {
-    font-size: 12px;
-    color: var(--ink-light);
-    margin-bottom: 36px;
-  }
-
-  .sig-line {
-    border-top: 1px solid var(--ink);
-    margin-bottom: 8px;
-  }
-
-  .sig-caption {
-    font-family: var(--mono);
-    font-size: 8px;
-    letter-spacing: 0.16em;
-    color: var(--ink-light);
-    opacity: 0.5;
-    text-transform: uppercase;
-  }
-
-  .sig-date {
-    margin-top: 28px;
-  }
-
-  .sig-date .sig-line {
-    width: 50%;
-  }
-
-  /* ── Footer ornament ── */
-  .page-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 56px;
-    padding-top: 16px;
-    border-top: 1px solid var(--rule);
-  }
-
-  .page-footer-brand {
-    font-family: var(--mono);
-    font-size: 8px;
-    letter-spacing: 0.2em;
-    color: var(--ink-light);
-    opacity: 0.4;
-    text-transform: uppercase;
-  }
-
-  .page-footer-ornament {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  }
-
-  .ornament-dot {
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: var(--gold);
-    opacity: 0.4;
-  }
-
-  .ornament-dot.active { opacity: 1; }
-
-  /* ── Print ── */
-  @media print {
-    @page {
-      size: 210mm 297mm;
-      margin: 0;
-    }
-    body { background: white; margin: 0; }
-    .page { width: 100%; margin: 0; box-shadow: none; }
-    .cover, .inner-page { 
-      height: 297mm !important; 
-      max-height: 297mm !important; 
-      padding: 48px 64px; 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{project_title}} — Quotation</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #004A99;
+      --primary-light: #0073E6;
+      --primary-dark: #00224D;
+      --navy: #001126;
+      --text-dark: #111827;
+      --text-body: #374151;
+      --text-light: #6B7280;
+      --white: #FFFFFF;
+      --gray-50: #F9FAFB;
+      --border: #E5E7EB;
+      --heading: 'Playfair Display', Georgia, serif;
+      --body: 'Inter', -apple-system, sans-serif;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: var(--body);
+      color: var(--text-dark);
+      background: #E8E4DC;
+      line-height: 1.6;
+    }
+
+    .page-wrapper {
+      width: 794px;
+      margin: 0 auto;
+      background: var(--white);
+    }
+
+    .page {
+      width: 794px;
+      height: 1122px;
+      position: relative;
+      overflow: hidden;
+      background: var(--white);
       page-break-after: always;
+    }
+
+    /* ══════ COVER ══════ */
+    .cover {
+      padding: 40px 50px;
+    }
+
+    .cover-logo {
+      height: 48px;
+      width: auto;
+    }
+
+    .cover-right-strip {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 180px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .cover-year-digit {
+      font-family: var(--heading);
+      font-size: 120px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+      opacity: 0.95;
+    }
+
+    .cover-date-block {
+      position: absolute;
+      top: 28px;
+      right: 200px;
+      text-align: right;
+      z-index: 3;
+    }
+
+    .cover-date-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--primary);
+    }
+
+    .cover-date-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .cover-quotation-block {
+      position: absolute;
+      bottom: 40px;
+      right: 16px;
+      text-align: center;
+      z-index: 3;
+      color: var(--white);
+      width: 148px;
+    }
+
+    .cover-quotation-label {
+      font-size: 10px;
+      opacity: 0.85;
+    }
+
+    .cover-quotation-value {
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .cover-mesh {
+      position: absolute;
+      bottom: 120px;
+      left: 40px;
+      width: 400px;
+      height: 300px;
+      opacity: 0.06;
+      z-index: 1;
+    }
+
+    .cover-swoosh {
+      position: absolute;
+      bottom: 0;
+      right: 140px;
+      width: 300px;
+      height: 300px;
+      z-index: 1;
       overflow: hidden;
     }
-    
-    /* Reduce vertical spacing to guarantee perfect 1122px fit without spillover */
-    .page-header { margin-bottom: 32px; padding-bottom: 12px; }
-    .section-number { margin-top: 24px !important; margin-bottom: 6px; }
-    h2 { margin-bottom: 16px; font-size: 40px; }
-    h3 { margin-top: 24px; margin-bottom: 10px; }
-    p { margin-bottom: 12px; font-size: 13px; line-height: 1.6; }
-    
-    /* Compress Phase Cards */
-    .phase-grid { margin-top: 20px; gap: 16px; }
-    .phase-card { padding: 20px; }
-    .phase-card-title { margin-bottom: 6px; font-size: 18px; }
-    
-    /* Compress Tables */
-    .timeline-table { margin-top: 24px; }
-    .timeline-table tbody td { padding: 12px 16px; }
-    .budget-table { margin-top: 24px; }
-    .budget-table tbody td, .budget-total td { padding: 12px 20px !important; }
-    
-    .payment-note { margin-top: 20px; padding: 16px 24px; }
-    .page-footer { margin-top: 32px; padding-top: 12px; }
-    .sig-grid { margin-top: 32px; }
-    
-    /* Prevent horrific slicing */
-    .phase-card, .timeline-table tr, .budget-table tr, .payment-note, .sig-block {
-      page-break-inside: avoid;
-      break-inside: avoid;
+
+    .cover-swoosh::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      right: -60px;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(0, 115, 230, 0.15), rgba(0, 34, 77, 0.08));
     }
-  }
 
-  @media screen {
-    body { padding: 32px 0; background: #E8E4DC; }
-    .page { box-shadow: 0 4px 40px rgba(0,0,0,0.18); }
-    .inner-page { min-height: 1122px; }
-  }
-</style>
+    .cover-title-area {
+      margin-top: 200px;
+      max-width: 560px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .cover-title {
+      font-family: var(--heading);
+      font-size: 52px;
+      font-weight: 700;
+      font-style: normal;
+      color: var(--primary);
+      line-height: 1.15;
+    }
+
+    .cover-description {
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.7;
+      margin-top: 20px;
+      max-width: 500px;
+    }
+
+    .cover-description strong {
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .cover-bottom {
+      position: absolute;
+      bottom: 40px;
+      left: 50px;
+      display: flex;
+      gap: 80px;
+      z-index: 2;
+    }
+
+    .cover-info-label {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .cover-info-name {
+      font-family: var(--heading);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .cover-info-detail {
+      font-size: 11px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    /* ══════ INNER PAGES ══════ */
+    .inner-page {
+      padding: 30px 50px 24px;
+    }
+
+    .inner-page::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 20px;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        var(--primary-dark) 0%, 
+        var(--primary) 20%, 
+        var(--primary-light) 40%, 
+        rgba(0, 115, 230, 0) 65%
+      );
+      z-index: 10;
+    }
+
+    .page-logo {
+      height: 32px;
+      width: auto;
+      margin-bottom: 12px;
+    }
+
+    .hero-banner {
+      width: calc(100% + 100px);
+      margin-left: -50px;
+      margin-top: -12px;
+      height: 317px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .section-heading {
+      font-family: var(--heading);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 16px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .section-heading-sm {
+      font-family: var(--heading);
+      font-size: 14px;
+      font-weight: 700;
+      font-style: normal;
+      text-decoration: underline;
+      color: var(--text-dark);
+      margin-top: 12px;
+      margin-bottom: 5px;
+    }
+
+    .section-heading-bold {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    .body-text {
+      font-size: 11px;
+      line-height: 1.65;
+      color: var(--text-body);
+      margin-bottom: 6px;
+    }
+
+    .body-text strong {
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .bullet-list {
+      list-style: disc;
+      padding-left: 22px;
+      margin: 4px 0 6px;
+    }
+
+    .bullet-list li {
+      font-size: 11px;
+      color: var(--text-body);
+      line-height: 1.55;
+      padding: 1px 0;
+    }
+
+    .num-list {
+      list-style: none;
+      padding-left: 14px;
+      margin: 4px 0 6px;
+      counter-reset: numlist;
+    }
+
+    .num-list li {
+      font-size: 11px;
+      color: var(--text-body);
+      line-height: 1.55;
+      padding: 1px 0;
+      counter-increment: numlist;
+    }
+
+    .num-list li::before {
+      content: counter(numlist) ".";
+      margin-right: 5px;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0 10px;
+      font-size: 11px;
+      border: 1px solid var(--border);
+    }
+
+    .data-table thead th {
+      background: var(--primary);
+      color: var(--white);
+      font-weight: 600;
+      padding: 7px 10px;
+      text-align: left;
+      font-size: 11px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .data-table tbody td {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      color: var(--text-body);
+      font-size: 11px;
+      vertical-align: top;
+    }
+
+    .data-table tbody tr:last-child td {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table .total-row td {
+      background: var(--primary);
+      color: var(--white);
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--heading);
+      font-size: 80px;
+      font-weight: 700;
+      color: rgba(0, 115, 230, 0.06);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .last-page-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ══════ PRINT ══════ */
+    @media print {
+      @page {
+        size: 210mm 297mm;
+        margin: 0;
+      }
+
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+
+      .page-wrapper {
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
+      }
+
+      .page {
+        width: 100%;
+        height: 297mm;
+        page-break-after: always;
+        overflow: hidden;
+      }
+
+      .page:last-child {
+        page-break-after: avoid;
+      }
+    }
+
+    @media screen {
+      body {
+        padding: 32px 0;
+      }
+
+      .page-wrapper {
+        box-shadow: 0 4px 40px rgba(0, 0, 0, 0.18);
+      }
+
+      .page+.page {
+        border-top: 3px solid #ccc;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<div class="page">
+  <div class="page-wrapper">
 
-  <!-- ══════════════ COVER PAGE ══════════════ -->
-  <div class="cover">
-    <div class="cover-eyebrow">Mobile Application Development — Proposal Document</div>
+    <!-- ═══════════ PAGE 1: COVER ═══════════ -->
+    <div class="page cover">
+      <img src="appspine_logo.png" alt="AppSpine" class="cover-logo">
+      <div class="watermark">Design. Build. Scale.</div>
 
-    <div class="cover-center">
-      <div class="cover-label">Prepared exclusively for</div>
-      <h1 class="cover-title">
-        Building Your<br><em>Digital Future,</em><br>Together.
-      </h1>
-      <div class="cover-rule"></div>
-      <p class="cover-sub">
-        A comprehensive proposal for the design, development, and launch of your custom mobile application — crafted by [Sender.Company].
-      </p>
-    </div>
+      <div class="cover-right-strip">
+        <span class="cover-year-digit">2</span>
+        <span class="cover-year-digit">0</span>
+        <span class="cover-year-digit">2</span>
+        <span class="cover-year-digit">6</span>
+      </div>
 
-    <div class="cover-parties">
-      <div>
-        <div class="cover-party-label">Prepared for</div>
-        <div class="cover-party-name">[Client.FirstName] [Client.LastName]</div>
-        <div class="cover-party-detail">
-          [Client.Company]<br>
-          [Client.PhoneNumber]<br>
-          [Client.Email]
+      <div class="cover-date-block">
+        <div class="cover-date-label">Date</div>
+        <div class="cover-date-value">{{date}}</div>
+      </div>
+
+      <div class="cover-quotation-block">
+        <div class="cover-quotation-label">Quotation No.</div>
+        <div class="cover-quotation-value">{{quotation_no}}</div>
+      </div>
+
+      <svg class="cover-mesh" viewBox="0 0 400 300" fill="none">
+        <g stroke="#004A99" stroke-width="0.5" opacity="0.8">
+          <path d="M0,150 Q100,50 200,150 T400,150" />
+          <path d="M0,170 Q100,70 200,170 T400,170" />
+          <path d="M0,190 Q100,90 200,190 T400,190" />
+          <path d="M0,210 Q100,110 200,210 T400,210" />
+          <path d="M0,230 Q100,130 200,230 T400,230" />
+          <path d="M0,250 Q100,150 200,250 T400,250" />
+          <path d="M0,130 Q100,30 200,130 T400,130" />
+          <path d="M0,110 Q100,10 200,110 T400,110" />
+          <path d="M50,0 Q50,150 50,300" />
+          <path d="M100,0 Q120,150 100,300" />
+          <path d="M150,0 Q180,150 150,300" />
+          <path d="M200,0 Q240,150 200,300" />
+          <path d="M250,0 Q300,150 250,300" />
+          <path d="M300,0 Q360,150 300,300" />
+          <path d="M350,0 Q420,150 350,300" />
+        </g>
+      </svg>
+      <div class="cover-swoosh"></div>
+
+      <div class="cover-title-area">
+        <h1 class="cover-title">{{project_title}}</h1>
+        <p class="cover-description">{{project_description}}</p>
+      </div>
+
+      <div class="cover-bottom">
+        <div>
+          <div class="cover-info-label">Presented to</div>
+          <div class="cover-info-name">{{client_name}}</div>
+          <div class="cover-info-detail">{{client_address}}</div>
+        </div>
+        <div>
+          <div class="cover-info-label">Presented by</div>
+          <div class="cover-info-name">{{company_name}}</div>
+          <div class="cover-info-detail">{{company_address}}</div>
         </div>
       </div>
-      <div>
-        <div class="cover-party-label">Prepared by</div>
-        <div class="cover-party-name">[Sender.FirstName] [Sender.LastName]</div>
-        <div class="cover-party-detail">
-          [Sender.Company]<br>
-          [Sender.PhoneNumber]<br>
-          [Sender.Email]
-        </div>
-      </div>
     </div>
+
+    <!-- ═══════════ PAGE 2: OVERVIEW + SCOPE START ═══════════ -->
+    <div class="page inner-page">
+      <img src="appspine_logo.png" alt="AppSpine" class="page-logo">
+      <img src="branding_image.png" alt="App Showcase" class="hero-banner">
+      <div class="watermark">Design. Build. Scale.</div>
+
+      <h2 class="section-heading">1. Project Overview</h2>
+      <p class="body-text">{{project_overview}}</p>
+
+      <h2 class="section-heading">2. Scope of Work</h2>
+      <p class="body-text">{{scope_of_work}}</p>
+
+      <h3 class="section-heading-sm">{{scope_module_1_title}}</h3>
+      <p class="body-text">{{scope_module_1_description}}</p>
+
+      <p class="section-heading-bold">{{scope_submodule_1_title}}</p>
+      <ul class="bullet-list">
+        <li>User registration &amp; login (OTP)</li>
+        <li>Product browsing (category-wise)</li>
+        <li>Product details view</li>
+        <li>Add to cart functionality</li>
+        <li>Checkout with Cash on Delivery (COD) only</li>
+        <li>Address entry (house no., street, landmark, contact details)</li>
+        <li>Order placement</li>
+        <li>Order status tracking (Placed → Confirmed → Packed → Out for Delivery → Delivered)</li>
+        <li>Order history</li>
+        <li>Basic notifications</li>
+      </ul>
+    </div>
+
+    <!-- ═══════════ PAGE 3: SCOPE CONTINUED + INVESTMENT ═══════════ -->
+    <div class="page inner-page">
+      <img src="appspine_logo.png" alt="AppSpine" class="page-logo">
+      <div class="watermark">Design. Build. Scale.</div>
+
+      <p class="section-heading-bold">{{scope_submodule_2_title}}</p>
+      <ol class="num-list">
+        <li>Login access</li>
+        <li>View assigned orders</li>
+        <li>Customer address &amp; contact details</li>
+        <li>Call customer option</li>
+        <li>Update order status (Picked / Delivered)</li>
+        <li>COD collection confirmation</li>
+      </ol>
+
+      <h3 class="section-heading-sm" style="text-decoration:none;font-style:normal;">{{scope_module_2_title}}</h3>
+      <ol class="num-list">
+        <li>Dashboard (orders overview &amp; status)</li>
+        <li>Product &amp; inventory management</li>
+        <li>Order management (accept, pack, dispatch)</li>
+        <li>Manual delivery boy assignment</li>
+        <li>Delivery boy management</li>
+        <li>Customer management</li>
+        <li>Basic reports (orders &amp; sales)</li>
+      </ol>
+
+      <p class="section-heading-bold">{{scope_module_3_title}}</p>
+      <ol class="num-list">
+        <li>Login access</li>
+        <li>View incoming orders</li>
+        <li>Update order status (Confirmed / Packed)</li>
+        <li>Assist in order processing</li>
+      </ol>
+
+      <h2 class="section-heading" style="text-decoration:underline;">3. Delivery &amp; Operations</h2>
+      <ol class="num-list">
+        <li>Same-day delivery model</li>
+        <li>Internal delivery boys (company-managed)</li>
+        <li>Manual order assignment</li>
+        <li>Address-based delivery (no maps)</li>
+        <li>Status-based tracking (no live tracking)</li>
+      </ol>
+
+      <h2 class="section-heading">4. Investment</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Milestone</th>
+            <th>Percentage</th>
+            <th>Amount (INR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Project Advance</td>
+            <td style="text-align:right;">30%</td>
+            <td>₹39,000</td>
+          </tr>
+          <tr>
+            <td>UI/UX Approval</td>
+            <td style="text-align:right;">30%</td>
+            <td>₹39,000</td>
+          </tr>
+          <tr>
+            <td>Before Deployment</td>
+            <td style="text-align:right;">20%</td>
+            <td>₹26,000</td>
+          </tr>
+          <tr>
+            <td>After Deployment</td>
+            <td style="text-align:right;">20%</td>
+            <td>₹26,000</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total</td>
+            <td style="text-align:right;">100%</td>
+            <td>{{total_amount}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ═══════════ PAGE 4: TIMELINE + TECH STACK ═══════════ -->
+    <div class="page inner-page">
+      <img src="appspine_logo.png" alt="AppSpine" class="page-logo">
+      <div class="watermark">Design. Build. Scale.</div>
+
+      <h2 class="section-heading">5. Development Timeline ({{timeline_title}})</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>Duration</th>
+            <th>Work Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Phase 1: Planning &amp; Design</td>
+            <td>Week 1 – 2</td>
+            <td>Requirement finalization, workflow planning, wireframing, UI/UX design, and approval</td>
+          </tr>
+          <tr>
+            <td>Phase 2: Backend Development</td>
+            <td>Week 3 – 4</td>
+            <td>Database setup, authentication (OTP), product, cart, order management, COD flow APIs</td>
+          </tr>
+          <tr>
+            <td>Phase 3: Application Development</td>
+            <td>Week 5 – 6</td>
+            <td>Mobile app development (Customer + Delivery Boy modules), basic integrations</td>
+          </tr>
+          <tr>
+            <td>Phase 4: Admin, Testing &amp; Deployment</td>
+            <td>Week 7 – 8</td>
+            <td>Admin &amp; staff panel development, testing, bug fixing, final deployment and delivery</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="body-text">The project will be completed within <strong>{{timeline_summary}}</strong></p>
+
+      <h2 class="section-heading">6. Technology Stack</h2>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Technology</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Mobile App Development</td>
+            <td>Flutter</td>
+            <td>Cross-platform development for Android &amp; iOS apps with a single codebase</td>
+          </tr>
+          <tr>
+            <td>Frontend (Admin Panel)</td>
+            <td>React.js</td>
+            <td>Interactive and responsive web dashboard for admin controls</td>
+          </tr>
+          <tr>
+            <td>Backend Development</td>
+            <td>Node.js</td>
+            <td>Scalable backend architecture with secure APIs</td>
+          </tr>
+          <tr>
+            <td>Database</td>
+            <td>MongoDB / PostgreSQL</td>
+            <td>Efficient data storage and management for users, orders, and transactions</td>
+          </tr>
+          <tr>
+            <td>Cloud / Hosting</td>
+            <td>AWS / Google Cloud / DigitalOcean</td>
+            <td>Reliable cloud infrastructure for scalability and performance</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 class="section-heading">7. Exclusions &amp; Assumptions</h2>
+      <ol class="num-list">
+        <li>The system will operate on COD with an address-based delivery model</li>
+        <li>Single-store setup with manual delivery assignment</li>
+        <li>Server, domain, and third-party services are not included</li>
+        <li>Delivery operations and rider management will be handled by the client</li>
+        <li>Features outside the defined scope will be treated as additional</li>
+        <li>Content and timely approvals must be provided by the client</li>
+        <li>Major changes may impact cost and timeline</li>
+      </ol>
+
+      <h2 class="section-heading">8. Support &amp; Acceptance</h2>
+      <ol class="num-list">
+        <li><strong>2 months</strong> of free post-launch support (bug fixes &amp; minor adjustments)</li>
+        <li>Technical assistance during initial launch phase</li>
+        <li>Additional support available under AMC</li>
+      </ol>
+      <p class="section-heading-bold">Acceptance Terms:</p>
+      <ol class="num-list" style="counter-reset:numlist;">
+        <li>Phase-wise approval required within 2–3 working days</li>
+        <li>No response will be considered as approval</li>
+        <li>Final delivery accepted after successful deployment</li>
+        <li>Post-approval changes will be treated as additional scope</li>
+      </ol>
+    </div>
+
+    <!-- ═══════════ PAGE 5: LAST PAGE ═══════════ -->
+    <div class="page">
+      <img src="proposal_last_page.png" alt="Next Steps &amp; Contact" class="last-page-img">
+    </div>
+
   </div>
-
-  <!-- ══════════════ GREETING PAGE ══════════════ -->
-  <div class="inner-page">
-    <div class="page-header">
-      <span class="page-header-brand">[Sender.Company]</span>
-      <span class="page-header-section">Introduction &amp; Contents</span>
-    </div>
-
-    <div class="section-number">Section 00 — Overview</div>
-    <h2>Greetings from<br><em>[Sender.Company]</em></h2>
-
-    <div class="greeting-body">
-      <div>
-        <p>
-          Dear [Client.FirstName] [Client.LastName],
-        </p>
-        <p>
-          I am pleased to introduce myself and my company, [Sender.Company]. We are excited to get to work on your new mobile app, and we want to make sure you're satisfied with our proposal and have a full understanding of what to expect throughout this process.
-        </p>
-        <p>
-          Creating a mobile app is exciting, and our expert team is fully capable of delivering something unique that will help grow your business. The following proposal will set a project road map from start to finish — giving you complete clarity on the process and timeline.
-        </p>
-        <p>
-          If you have any questions or concerns, please contact me personally.
-        </p>
-        <div class="signature-block">
-          <div class="signature-name">[Sender.FirstName] [Sender.LastName]</div>
-          [Sender.Company]<br>
-          [Sender.PhoneNumber] · [Sender.Email]
-        </div>
-      </div>
-
-      <div>
-        <div class="greeting-quote">
-          "We don't just build apps — we build experiences that make your business impossible to ignore."
-        </div>
-
-        <div class="toc" style="margin-top:40px;">
-          <div class="toc-item"><span class="toc-dot"></span><span>Who We Are</span><span>01</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>What to Expect</span><span>02</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>Research &amp; Outreach</span><span>02</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>Framework &amp; Design</span><span>02</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>Development</span><span>02</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>Testing &amp; Launch</span><span>02</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>Timeline</span><span>03</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>Expenses &amp; Budget</span><span>03</span></div>
-          <div class="toc-item"><span class="toc-dot"></span><span>Agreement</span><span>04</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="page-footer">
-      <span class="page-footer-brand">Confidential — [Client.Company] · [Sender.Company]</span>
-      <div class="page-footer-ornament">
-        <div class="ornament-dot active"></div>
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════ APPROACH PAGE ══════════════ -->
-  <div class="inner-page">
-    <div class="page-header">
-      <span class="page-header-brand">[Sender.Company]</span>
-      <span class="page-header-section">Our Approach</span>
-    </div>
-
-    <div class="section-number">Section 01 — Who We Are</div>
-    <h2>We develop apps<br><em>so you don't have to.</em></h2>
-
-    <p>
-      We are living in the age of connectivity — more things than ever before are right at your fingertips. With one press of a button, one swipe, you can open up new worlds in seconds. At [Sender.Company], we don't just talk about apps; we live and breathe them.
-    </p>
-    <p>
-      We have assembled a team of the best minds in software development, marketing, and leadership — giving our clients access to the most cutting-edge technology. With years of experience in both Android and iOS development, you can rest assured you're in expert hands.
-    </p>
-
-    <div class="section-number" style="margin-top:48px;">Section 02 — What to Expect</div>
-    <h2 style="font-size:36px;">The Four Phases<br>of <em>Your Project</em></h2>
-
-    <div class="phase-grid">
-      <div class="phase-card">
-        <div class="phase-card-num">Phase 01</div>
-        <div class="phase-card-title">Research &amp; Outreach</div>
-        <div class="phase-card-desc">We gather deep intelligence about your company, your customers, and your market. Focus groups, audience research, and brand analysis form the bedrock of everything that follows.</div>
-      </div>
-      <div class="phase-card">
-        <div class="phase-card-num">Phase 02</div>
-        <div class="phase-card-title">Framework &amp; Design</div>
-        <div class="phase-card-desc">Sitemaps, wireframes, UX flows, and UI design. [Client.Company] plays an active role here — it's your vision we're realising, and getting this right saves significant time later.</div>
-      </div>
-      <div class="phase-card">
-        <div class="phase-card-num">Phase 03</div>
-        <div class="phase-card-title">Development</div>
-        <div class="phase-card-desc">Our engineers get to work. This phase is intensive and largely internal, but every line of code is written against the agreed specification. [Client.Company] re-engages at testing.</div>
-      </div>
-      <div class="phase-card">
-        <div class="phase-card-num">Phase 04</div>
-        <div class="phase-card-title">Testing &amp; Launch</div>
-        <div class="phase-card-desc">Rigorous QA, bug resolution, and a collaborative marketing strategy ensure your app launches to an audience ready and waiting. We go live together.</div>
-      </div>
-    </div>
-
-    <h3>Framework Highlights</h3>
-    <ul class="feature-list">
-      <li>Functionality mapping and content architecture</li>
-      <li>Interactive wireframes — the structural core of your app</li>
-      <li>Branding integration with existing digital platforms (web, email, social)</li>
-      <li>User Experience (UX) and User Interface (UI) design — how it feels to use, and why people love it</li>
-    </ul>
-
-    <div class="page-footer">
-      <span class="page-footer-brand">Confidential — [Client.Company] · [Sender.Company]</span>
-      <div class="page-footer-ornament">
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot active"></div>
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════ TIMELINE + EXPENSES PAGE ══════════════ -->
-  <div class="inner-page">
-    <div class="page-header">
-      <span class="page-header-brand">[Sender.Company]</span>
-      <span class="page-header-section">Timeline &amp; Budget</span>
-    </div>
-
-    <div class="section-number">Section 03 — Timeline</div>
-    <h2>Project <em>Timeline</em></h2>
-
-    <p>[Sender.Company] estimates it will take <strong>[Number.Of.Months] months</strong> to complete your new mobile application. Upon signing this agreement, work begins immediately.</p>
-
-    <table class="timeline-table">
-      <thead>
-        <tr>
-          <th>Phase</th>
-          <th>Deliverable</th>
-          <th>Duration</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Research &amp; Outreach</td>
-          <td>Audience analysis, brand audit, focus groups</td>
-          <td>1 – 2 weeks</td>
-        </tr>
-        <tr>
-          <td>Design &amp; Consultation</td>
-          <td>Wireframes, UX/UI, client sign-off</td>
-          <td>4 – 6 weeks</td>
-        </tr>
-        <tr>
-          <td>Development</td>
-          <td>Full-stack app build (iOS &amp; Android)</td>
-          <td>Up to 8 weeks</td>
-        </tr>
-        <tr>
-          <td>Testing &amp; Launch</td>
-          <td>QA, bug fixes, app store submission &amp; marketing</td>
-          <td>2 – 3 weeks</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="section-number" style="margin-top:56px;">Section 03 — Budget</div>
-    <h2 style="font-size:36px;">Investment <em>Breakdown</em></h2>
-
-    <table class="budget-table">
-      <thead>
-        <tr>
-          <th>Service</th>
-          <th>Unit Price</th>
-          <th>Qty</th>
-          <th>Subtotal</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Planning, Research &amp; Outreach</td>
-          <td>$3,000.00</td>
-          <td>1</td>
-          <td>$3,000.00</td>
-        </tr>
-        <tr>
-          <td>Design &amp; Consultation</td>
-          <td>$6,000.00</td>
-          <td>1</td>
-          <td>$6,000.00</td>
-        </tr>
-        <tr>
-          <td>Development</td>
-          <td>$20,000.00</td>
-          <td>1</td>
-          <td>$20,000.00</td>
-        </tr>
-        <tr style="border-bottom:none;">
-          <td colspan="3" style="text-align:right; font-size:11px; color:var(--ink-light); padding-right:20px;">Subtotal</td>
-          <td>$29,000.00</td>
-        </tr>
-        <tr style="border-bottom:none;">
-          <td colspan="3" style="text-align:right; font-size:11px; color:var(--ink-light); padding-right:20px;">Tax (7.5%)</td>
-          <td>$2,175.00</td>
-        </tr>
-        <tr class="budget-total">
-          <td colspan="3" style="text-align:right; font-size:14px; font-weight:600; color:var(--ink); padding-right:20px;">Total Investment</td>
-          <td style="text-align:right;">$31,175.00</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="payment-note">
-      <strong>Payment Terms</strong>
-      One-third of the total budget is due upon signing this agreement. The remaining balance must be paid within 30 days of the app's launch.<br><br>
-      <strong style="display:inline; font-size:inherit; letter-spacing:0; text-transform:none; color:var(--ink-light);">Ongoing Hosting &amp; Updates:</strong> [Sender.Company] charges a monthly rate of <strong>[Dollar.Amount]</strong> for app hosting and necessary updates. Payments are due at the beginning of each month, received no later than the 15th.
-    </div>
-
-    <div class="page-footer">
-      <span class="page-footer-brand">Confidential — [Client.Company] · [Sender.Company]</span>
-      <div class="page-footer-ornament">
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot active"></div>
-        <div class="ornament-dot"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════════ AGREEMENT PAGE ══════════════ -->
-  <div class="inner-page" style="page-break-after: avoid;">
-    <div class="page-header">
-      <span class="page-header-brand">[Sender.Company]</span>
-      <span class="page-header-section">Agreement &amp; Signatures</span>
-    </div>
-
-    <div class="section-number">Section 04 — Agreement</div>
-    <h2>Let's Build<br><em>Something Great.</em></h2>
-
-    <div class="agreement-intro">
-      <p>
-        By signing below, both parties agree to accept this proposal for mobile application development and any modifications already agreed upon between [Sender.Company] and [Client.Company]. This agreement constitutes the full understanding of both parties with respect to the subject matter herein and supersedes all prior discussions, negotiations, and agreements.
-      </p>
-    </div>
-
-    <div class="sig-grid">
-      <div class="sig-block">
-        <div class="sig-party-label">Service Provider</div>
-        <div class="sig-party-name">[Sender.FirstName] [Sender.LastName]</div>
-        <div class="sig-party-company">[Sender.Company]</div>
-
-        <div style="height:56px;"></div>
-        <div class="sig-line"></div>
-        <div class="sig-caption">Authorised Signature</div>
-
-        <div class="sig-date" style="margin-top:32px;">
-          <div class="sig-line" style="width:50%;"></div>
-          <div class="sig-caption">Date</div>
-        </div>
-      </div>
-
-      <div class="sig-block">
-        <div class="sig-party-label">Client</div>
-        <div class="sig-party-name">[Client.FirstName] [Client.LastName]</div>
-        <div class="sig-party-company">[Client.Company]</div>
-
-        <div style="height:56px;"></div>
-        <div class="sig-line"></div>
-        <div class="sig-caption">Authorised Signature</div>
-
-        <div class="sig-date" style="margin-top:32px;">
-          <div class="sig-line" style="width:50%;"></div>
-          <div class="sig-caption">Date</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:64px; text-align:center; opacity:0.35;">
-      <div style="font-family:var(--mono); font-size:8px; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink);">
-        [Sender.Company] · [Sender.Email] · [Sender.PhoneNumber]
-      </div>
-    </div>
-
-    <div class="page-footer">
-      <span class="page-footer-brand">Confidential — [Client.Company] · [Sender.Company]</span>
-      <div class="page-footer-ornament">
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot"></div>
-        <div class="ornament-dot active"></div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /page -->
 </body>
+
 </html>
