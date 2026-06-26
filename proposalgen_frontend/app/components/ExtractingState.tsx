@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText } from 'lucide-react';
 
 const MESSAGES = [
   "Reading your brief...",
@@ -21,14 +21,14 @@ export default function ExtractingState() {
 
   return (
     <div className="flex flex-col items-center justify-center h-[100dvh] w-full bg-white relative overflow-hidden">
-      
+
       {/* Appspine Logo with Pulse Animation */}
       <div className="relative mb-12">
         <div className="absolute inset-0 bg-[#3b82f6] rounded-full blur-xl opacity-40 animate-[ping_1.5s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
         <div className="absolute inset-0 bg-[#1a56c4] rounded-full opacity-20 scale-150 animate-[pulse_1.2s_ease-in-out_infinite]"></div>
-        
-        <div className="relative w-20 h-20 bg-[#0d2d6e] rounded-2xl flex items-center justify-center shadow-2xl z-10 animate-[pulse_1.2s_ease-in-out_infinite]">
-          <FileText className="w-10 h-10 text-white" />
+
+        <div className="relative w-24 h-24 bg-white rounded-2xl flex items-center justify-center shadow-2xl z-10 animate-[pulse_1.2s_ease-in-out_infinite] p-2">
+          <Image src="/appspine_logo.png" alt="Appspine Logo" width={80} height={80} className="object-contain" />
         </div>
       </div>
 

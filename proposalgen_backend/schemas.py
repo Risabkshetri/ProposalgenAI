@@ -4,6 +4,16 @@ from typing import Optional
 class RawTextRequest(BaseModel):
     raw_text: str
 
+class TimelinePhase(BaseModel):
+    phase: str
+    duration: str
+    description: str
+
+class TechStackItem(BaseModel):
+    component: str
+    technology: str
+    description: str
+
 class ProposalDataResponse(BaseModel):
     project_title: str
     project_type: str
@@ -19,13 +29,17 @@ class ProposalDataResponse(BaseModel):
     scope_of_work: str
     scope_module_1_title: str
     scope_module_1_description: str
-    scope_submodule_1_title: str
-    scope_submodule_2_title: str
+    scope_module_1_features: list[str]
     scope_module_2_title: str
+    scope_module_2_features: list[str]
     scope_module_3_title: str
+    scope_module_3_features: list[str]
+    scope_module_4_title: str
+    scope_module_4_features: list[str]
     total_amount: str
-    timeline_title: str
     timeline_summary: str
+    timeline_phases: list[TimelinePhase]
+    tech_stack: list[TechStackItem]
 
 class PDFRequest(BaseModel):
     html_content: str

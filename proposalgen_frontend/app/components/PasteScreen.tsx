@@ -1,5 +1,6 @@
 import React from 'react';
-import { Sparkles, FileText } from 'lucide-react';
+import Image from 'next/image';
+import { Sparkles } from 'lucide-react';
 
 interface PasteScreenProps {
   rawText: string;
@@ -13,10 +14,7 @@ export default function PasteScreen({ rawText, setRawText, handleGenerate, loadi
     <div className="flex flex-col md:flex-row h-[100dvh] w-full bg-[#f8faff] md:bg-white overflow-hidden relative">
       {/* MOBILE HEADER (Hidden on Desktop) */}
       <div className="md:hidden flex items-center p-6 pt-10">
-        <div className="w-8 h-8 rounded bg-[#0d2d6e] flex items-center justify-center mr-3">
-          <FileText className="w-4 h-4 text-white" />
-        </div>
-        <h1 className="text-[18px] font-bold text-[#0d2d6e]">Appspine AI</h1>
+        <Image src="/appspine_logo.png" alt="Appspine Logo" width={120} height={32} className="object-contain" />
       </div>
 
       {/* LEFT PANEL: Animated Desktop Sidebar */}
@@ -27,10 +25,7 @@ export default function PasteScreen({ rawText, setRawText, handleGenerate, loadi
         
         <div className="relative z-10">
           <div className="flex items-center mb-10">
-            <div className="w-10 h-10 rounded-lg bg-[#0d2d6e] flex items-center justify-center mr-3 shadow-lg">
-              <FileText className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-[20px] font-bold tracking-tight text-[#0d2d6e]">Appspine Proposal AI</span>
+            <Image src="/appspine_logo.png" alt="Appspine Logo" width={160} height={45} className="object-contain" />
           </div>
 
           <h1 className="text-[42px] lg:text-[48px] font-black leading-[1.1] tracking-tight text-[#0d2d6e] mb-2">

@@ -2,6 +2,8 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import AIField from './ui/AIField';
+import FeatureList from './ui/FeatureList';
+import TableEditor from './ui/TableEditor';
 import { WizardProps } from './types';
 
 interface EditFormProps extends WizardProps {
@@ -14,7 +16,8 @@ export default function EditForm({
   formData, 
   handleInputChange,
   nextStep,
-  prevStep
+  prevStep,
+  setStep
 }: EditFormProps) {
 
   const variants = {
@@ -33,7 +36,7 @@ export default function EditForm({
   const formatCur = (num: number) => num ? `₹${num.toLocaleString('en-IN')}` : '₹0';
 
   return (
-    <div className="flex-1 w-full md:max-w-[420px] mx-auto relative flex flex-col h-full bg-white">
+    <div className="flex-1 w-full mx-auto relative flex flex-col h-full bg-white">
       
       {/* Mobile Header */}
       <div className="md:hidden pt-8 px-6 pb-4 bg-white border-b border-gray-100 z-10">
@@ -49,8 +52,12 @@ export default function EditForm({
           </span>
         </div>
         <div className="flex gap-2">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i <= step ? 'bg-[#3b82f6]' : 'bg-gray-100'}`} />
+          {([1, 2, 3, 4] as const).map(i => (
+            <button 
+              key={i} 
+              onClick={() => setStep(i)}
+              className={`h-1.5 flex-1 rounded-full transition-all duration-300 cursor-pointer ${i <= step ? 'bg-[#3b82f6]' : 'bg-gray-200 hover:bg-gray-300'}`} 
+            />
           ))}
         </div>
       </div>
@@ -83,6 +90,8 @@ export default function EditForm({
                 
                 <AIField label="Project Title" field="project_title" formData={formData} handleInputChange={handleInputChange} />
                 
+                <AIField label="Project Description" field="project_description" isTextArea={true} formData={formData} handleInputChange={handleInputChange} />
+                
                 <AIField 
                   label="Project Type" 
                   field="project_type" 
@@ -93,20 +102,34 @@ export default function EditForm({
                 />
                 
                 <AIField label="Scope Summary" field="project_overview" isTextArea={true} formData={formData} handleInputChange={handleInputChange} />
-                
-                <AIField 
-                  label="Key Features" 
-                  field="key_features" 
-                  type="tags"
-                  formData={formData} 
-                  handleInputChange={handleInputChange} 
-                />
 
+                {/* Module 1 */}
                 <div className="mt-8 pt-6 border-t border-gray-100">
-                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-6">Detailed Modules</h4>
-                  <AIField label="Module 1" field="scope_module_1_title" formData={formData} handleInputChange={handleInputChange} />
-                  <AIField label="Module 2" field="scope_module_2_title" formData={formData} handleInputChange={handleInputChange} />
-                  <AIField label="Module 3" field="scope_module_3_title" formData={formData} handleInputChange={handleInputChange} />
+                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">Module 1</h4>
+                  <AIField label="Module Title" field="scope_module_1_title" formData={formData} handleInputChange={handleInputChange} />
+                  <AIField label="Description" field="scope_module_1_description" isTextArea={true} formData={formData} handleInputChange={handleInputChange} />
+                  <FeatureList label="Features" field="scope_module_1_features" formData={formData} handleInputChange={handleInputChange} />
+                </div>
+
+                {/* Module 2 */}
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">Module 2</h4>
+                  <AIField label="Module Title" field="scope_module_2_title" formData={formData} handleInputChange={handleInputChange} />
+                  <FeatureList label="Features" field="scope_module_2_features" formData={formData} handleInputChange={handleInputChange} />
+                </div>
+
+                {/* Module 3 */}
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">Module 3</h4>
+                  <AIField label="Module Title" field="scope_module_3_title" formData={formData} handleInputChange={handleInputChange} />
+                  <FeatureList label="Features" field="scope_module_3_features" formData={formData} handleInputChange={handleInputChange} />
+                </div>
+
+                {/* Module 4 */}
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-4">Module 4</h4>
+                  <AIField label="Module Title" field="scope_module_4_title" formData={formData} handleInputChange={handleInputChange} />
+                  <FeatureList label="Features" field="scope_module_4_features" formData={formData} handleInputChange={handleInputChange} />
                 </div>
               </div>
             )}
@@ -146,11 +169,34 @@ export default function EditForm({
 
                 <AIField 
                   label="Timeline" 
-                  field="timeline_title" 
+                  field="timeline_summary" 
                   type="text"
-                  suffix="weeks"
                   formData={formData} 
                   handleInputChange={handleInputChange} 
+                />
+
+                <TableEditor
+                  label="Timeline Phases"
+                  items={(formData?.timeline_phases as unknown as Record<string, string>[]) || []}
+                  columns={[
+                    { key: 'phase', label: 'Phase', type: 'text', width: '30%' },
+                    { key: 'duration', label: 'Duration', type: 'text', width: '20%' },
+                    { key: 'description', label: 'Description', type: 'text', width: '50%' }
+                  ]}
+                  onChange={(newItems) => handleInputChange('timeline_phases', newItems as unknown)}
+                  onAdd={() => handleInputChange('timeline_phases', [...(formData?.timeline_phases || []), { phase: 'New Phase', duration: '1 week', description: 'Description' }] as unknown)}
+                />
+
+                <TableEditor
+                  label="Technology Stack"
+                  items={(formData?.tech_stack as unknown as Record<string, string>[]) || []}
+                  columns={[
+                    { key: 'component', label: 'Component', type: 'text', width: '30%' },
+                    { key: 'technology', label: 'Technology', type: 'text', width: '25%' },
+                    { key: 'description', label: 'Description', type: 'text', width: '45%' }
+                  ]}
+                  onChange={(newItems) => handleInputChange('tech_stack', newItems as unknown)}
+                  onAdd={() => handleInputChange('tech_stack', [...(formData?.tech_stack || []), { component: 'New Component', technology: 'Tech', description: 'Description' }] as unknown)}
                 />
               </div>
             )}

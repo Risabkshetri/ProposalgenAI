@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Download, Share2, PlusCircle } from 'lucide-react';
+import { Download, Share2, PlusCircle, Copy, Check } from 'lucide-react';
 import { ProposalData } from './types';
 
 interface SuccessScreenProps {
@@ -10,9 +10,20 @@ interface SuccessScreenProps {
   reset: () => void;
   isDownloading: boolean;
   prevStep: () => void;
+  shareId: string | null;
+  onGenerateShare?: () => void;
 }
 
-export default function SuccessScreen({ formData, downloadPDF, shareWhatsApp, reset, isDownloading, prevStep }: SuccessScreenProps) {
+export default function SuccessScreen({ formData, downloadPDF, shareWhatsApp, reset, isDownloading, prevStep, shareId, onGenerateShare }: SuccessScreenProps) {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    if (!shareId) return;
+    const url = `${window.location.origin}/p/${shareId}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
   return (
     <div className="flex-1 w-full md:max-w-[420px] mx-auto flex flex-col items-center justify-center p-8 bg-white text-center">
       
@@ -81,6 +92,47 @@ export default function SuccessScreen({ formData, downloadPDF, shareWhatsApp, re
         >
           <Share2 className="w-5 h-5 mr-2" /> Send via WhatsApp
         </button>
+      </div>
+
+      {/* Team Review Section */}
+      <div className="w-full mt-6 flex flex-col items-center">
+        <div className="flex items-center w-full mb-4">
+          <div className="h-[1px] flex-1 bg-gray-200"></div>
+          <span className="px-4 text-[12px] font-bold text-gray-400 uppercase tracking-widest">Team Review</span>
+          <div className="h-[1px] flex-1 bg-gray-200"></div>
+        </div>
+        
+        {shareId ? (
+          <>
+            <div className="w-full flex items-center bg-[#f8faff] border border-[#e8edf5] rounded-xl p-2 pl-4">
+              <input 
+                type="text" 
+                readOnly 
+                value={`${typeof window !== 'undefined' ? window.location.origin : ''}/p/${shareId}`}
+                className="flex-1 bg-transparent text-[13px] text-gray-600 font-medium outline-none truncate"
+              />
+              <button 
+                onClick={handleCopy}
+                className={`ml-2 w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${copied ? 'bg-emerald-100 text-emerald-600' : 'bg-white border border-[#e8edf5] text-gray-500 hover:text-[#1a56c4] hover:bg-blue-50'}`}
+                title="Copy link"
+              >
+                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              </button>
+            </div>
+            
+            <div className="w-full mt-3 flex justify-between px-1">
+              <span className="text-[11px] font-medium text-gray-500">Anyone with this link can view and edit</span>
+              <span className="text-[11px] font-medium text-gray-400">Expires in 30 days</span>
+            </div>
+          </>
+        ) : (
+          <button 
+            onClick={onGenerateShare}
+            className="w-full h-[48px] bg-white border-2 border-dashed border-gray-300 text-gray-500 hover:border-[#1a56c4] hover:text-[#1a56c4] rounded-xl font-medium flex items-center justify-center transition-all"
+          >
+            <PlusCircle className="w-4 h-4 mr-2" /> Generate Team Link
+          </button>
+        )}
       </div>
 
       <div className="mt-8 flex gap-4 w-full text-[14px] font-semibold text-[#64748b]">

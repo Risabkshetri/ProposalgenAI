@@ -48,7 +48,7 @@
     .page-wrapper {
       width: 794px;
       margin: 0 auto;
-      background: var(--white);
+      background-color: var(--white);
     }
 
     .page {
@@ -56,7 +56,7 @@
       height: 1122px;
       position: relative;
       overflow: hidden;
-      background: var(--white);
+      background-color: var(--white);
       page-break-after: always;
     }
 
@@ -76,7 +76,8 @@
       right: 0;
       width: 180px;
       height: 100%;
-      background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+      /* WeasyPrint struggles with var() inside gradients, use hardcoded hex */
+      background: linear-gradient(180deg, #00224D 0%, #004A99 50%, #0073E6 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -238,12 +239,12 @@
       right: 0;
       width: 20px;
       height: 100%;
-      background: linear-gradient(180deg, 
-        var(--primary-dark) 0%, 
-        var(--primary) 20%, 
-        var(--primary-light) 40%, 
-        rgba(0, 115, 230, 0) 65%
-      );
+      /* WeasyPrint struggles with var() inside gradients, use hardcoded hex */
+      background: linear-gradient(180deg,
+          #00224D 0%,
+          #004A99 20%,
+          #0073E6 40%,
+          rgba(0, 115, 230, 0) 65%);
       z-index: 10;
     }
 
@@ -348,7 +349,7 @@
     }
 
     .data-table thead th {
-      background: var(--primary);
+      background-color: var(--primary);
       color: var(--white);
       font-weight: 600;
       padding: 7px 10px;
@@ -370,7 +371,7 @@
     }
 
     .data-table .total-row td {
-      background: var(--primary);
+      background-color: var(--primary);
       color: var(--white);
       font-weight: 700;
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -382,7 +383,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-family: var(--heading);
-      font-size: 80px;
+      font-size: 60px;
       font-weight: 700;
       color: rgba(0, 115, 230, 0.06);
       white-space: nowrap;
@@ -503,8 +504,8 @@
         </div>
         <div>
           <div class="cover-info-label">Presented by</div>
-          <div class="cover-info-name">{{company_name}}</div>
-          <div class="cover-info-detail">{{company_address}}</div>
+          <div class="cover-info-name">Appspine technologies Private Limited</div>
+          <div class="cover-info-detail">Noida, Delhi NCR, India - 201301</div>
         </div>
       </div>
     </div>
@@ -523,19 +524,8 @@
 
       <h3 class="section-heading-sm">{{scope_module_1_title}}</h3>
       <p class="body-text">{{scope_module_1_description}}</p>
-
-      <p class="section-heading-bold">{{scope_submodule_1_title}}</p>
       <ul class="bullet-list">
-        <li>User registration &amp; login (OTP)</li>
-        <li>Product browsing (category-wise)</li>
-        <li>Product details view</li>
-        <li>Add to cart functionality</li>
-        <li>Checkout with Cash on Delivery (COD) only</li>
-        <li>Address entry (house no., street, landmark, contact details)</li>
-        <li>Order placement</li>
-        <li>Order status tracking (Placed → Confirmed → Packed → Out for Delivery → Delivered)</li>
-        <li>Order history</li>
-        <li>Basic notifications</li>
+        {{scope_module_1_features}}
       </ul>
     </div>
 
@@ -544,42 +534,19 @@
       <img src="appspine_logo.png" alt="AppSpine" class="page-logo">
       <div class="watermark">Design. Build. Scale.</div>
 
-      <p class="section-heading-bold">{{scope_submodule_2_title}}</p>
-      <ol class="num-list">
-        <li>Login access</li>
-        <li>View assigned orders</li>
-        <li>Customer address &amp; contact details</li>
-        <li>Call customer option</li>
-        <li>Update order status (Picked / Delivered)</li>
-        <li>COD collection confirmation</li>
-      </ol>
-
       <h3 class="section-heading-sm" style="text-decoration:none;font-style:normal;">{{scope_module_2_title}}</h3>
       <ol class="num-list">
-        <li>Dashboard (orders overview &amp; status)</li>
-        <li>Product &amp; inventory management</li>
-        <li>Order management (accept, pack, dispatch)</li>
-        <li>Manual delivery boy assignment</li>
-        <li>Delivery boy management</li>
-        <li>Customer management</li>
-        <li>Basic reports (orders &amp; sales)</li>
+        {{scope_module_2_features}}
       </ol>
 
-      <p class="section-heading-bold">{{scope_module_3_title}}</p>
+      <h3 class="section-heading-sm" style="text-decoration:none;font-style:normal;">{{scope_module_3_title}}</h3>
       <ol class="num-list">
-        <li>Login access</li>
-        <li>View incoming orders</li>
-        <li>Update order status (Confirmed / Packed)</li>
-        <li>Assist in order processing</li>
+        {{scope_module_3_features}}
       </ol>
 
-      <h2 class="section-heading" style="text-decoration:underline;">3. Delivery &amp; Operations</h2>
+      <h3 class="section-heading-sm" style="text-decoration:none;font-style:normal;">{{scope_module_4_title}}</h3>
       <ol class="num-list">
-        <li>Same-day delivery model</li>
-        <li>Internal delivery boys (company-managed)</li>
-        <li>Manual order assignment</li>
-        <li>Address-based delivery (no maps)</li>
-        <li>Status-based tracking (no live tracking)</li>
+        {{scope_module_4_features}}
       </ol>
 
       <h2 class="section-heading">4. Investment</h2>
@@ -626,7 +593,7 @@
       <img src="appspine_logo.png" alt="AppSpine" class="page-logo">
       <div class="watermark">Design. Build. Scale.</div>
 
-      <h2 class="section-heading">5. Development Timeline ({{timeline_title}})</h2>
+      <h2 class="section-heading">5. Development Timeline ({{timeline_summary}})</h2>
       <table class="data-table">
         <thead>
           <tr>
@@ -636,26 +603,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Phase 1: Planning &amp; Design</td>
-            <td>Week 1 – 2</td>
-            <td>Requirement finalization, workflow planning, wireframing, UI/UX design, and approval</td>
-          </tr>
-          <tr>
-            <td>Phase 2: Backend Development</td>
-            <td>Week 3 – 4</td>
-            <td>Database setup, authentication (OTP), product, cart, order management, COD flow APIs</td>
-          </tr>
-          <tr>
-            <td>Phase 3: Application Development</td>
-            <td>Week 5 – 6</td>
-            <td>Mobile app development (Customer + Delivery Boy modules), basic integrations</td>
-          </tr>
-          <tr>
-            <td>Phase 4: Admin, Testing &amp; Deployment</td>
-            <td>Week 7 – 8</td>
-            <td>Admin &amp; staff panel development, testing, bug fixing, final deployment and delivery</td>
-          </tr>
+          {{timeline_rows}}
         </tbody>
       </table>
       <p class="body-text">The project will be completed within <strong>{{timeline_summary}}</strong></p>
@@ -670,31 +618,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Mobile App Development</td>
-            <td>Flutter</td>
-            <td>Cross-platform development for Android &amp; iOS apps with a single codebase</td>
-          </tr>
-          <tr>
-            <td>Frontend (Admin Panel)</td>
-            <td>React.js</td>
-            <td>Interactive and responsive web dashboard for admin controls</td>
-          </tr>
-          <tr>
-            <td>Backend Development</td>
-            <td>Node.js</td>
-            <td>Scalable backend architecture with secure APIs</td>
-          </tr>
-          <tr>
-            <td>Database</td>
-            <td>MongoDB / PostgreSQL</td>
-            <td>Efficient data storage and management for users, orders, and transactions</td>
-          </tr>
-          <tr>
-            <td>Cloud / Hosting</td>
-            <td>AWS / Google Cloud / DigitalOcean</td>
-            <td>Reliable cloud infrastructure for scalability and performance</td>
-          </tr>
+          {{tech_stack_rows}}
         </tbody>
       </table>
 

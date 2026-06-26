@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar';
 import EditForm from './components/EditForm';
 import LivePreview from './components/LivePreview';
 import SuccessScreen from './components/SuccessScreen';
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function App() {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -18,11 +19,44 @@ export default function App() {
   const [rawText, setRawText] = useState('');
   const [formData, setFormData] = useState<ProposalData | null>(null);
   const [showMobileSheet, setShowMobileSheet] = useState(false);
+  const [shareId, setShareId] = useState<string | null>(null);
   
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [editWidth, setEditWidth] = useState(420);
+  const isDragging = useRef(false);
+
+  // Resizer logic
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging.current) return;
+      setEditWidth((prev) => Math.min(Math.max(300, prev + e.movementX), 800));
+    };
+    const handleMouseUp = () => {
+      if (isDragging.current) {
+        isDragging.current = false;
+        document.body.style.cursor = 'default';
+        document.body.style.userSelect = 'auto';
+      }
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  const handleDragStart = () => {
+    isDragging.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  };
 
   // Load local storage on mount
   useEffect(() => {
+    setIsInitialized(true);
+    const savedId = localStorage.getItem('proposal_share_id');
+    if (savedId) setShareId(savedId);
     try {
       const draftStr = localStorage.getItem('appspine_draft');
       if (draftStr) {
@@ -35,7 +69,6 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-    setIsInitialized(true);
   }, []);
 
   // Save to local storage on change
@@ -46,12 +79,35 @@ export default function App() {
   }, [step, rawText, formData, isInitialized]);
 
   const handleReset = () => {
-    if (confirm("Are you sure you want to start over and clear this proposal?")) {
-      setStep(0);
-      setRawText('');
-      setFormData(null);
-      localStorage.removeItem('appspine_draft');
-    }
+    toast((t) => (
+      <div className="flex flex-col gap-3">
+        <span className="font-semibold text-gray-800">Start new proposal?</span>
+        <span className="text-sm text-gray-600">This will clear your current progress.</span>
+        <div className="flex gap-2 mt-2">
+          <button 
+            onClick={() => toast.dismiss(t.id)}
+            className="px-4 py-2 text-[13px] font-bold bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+          <button 
+            onClick={() => {
+              setStep(0);
+              setRawText('');
+              setFormData(null);
+              setShareId(null);
+              localStorage.removeItem('appspine_draft');
+              localStorage.removeItem('proposal_share_id');
+              toast.dismiss(t.id);
+              toast.success('Proposal cleared successfully');
+            }}
+            className="px-4 py-2 text-[13px] font-bold bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Yes, Clear it
+          </button>
+        </div>
+      </div>
+    ), { duration: 6000, style: { maxWidth: '400px' } });
   };
 
   const handleGenerate = async () => {
@@ -76,21 +132,76 @@ export default function App() {
       }
       if (!data.project_type) data.project_type = 'Custom';
       if (!data.key_features) data.key_features = [];
+      if (!data.scope_module_1_features) data.scope_module_1_features = [];
+      if (!data.scope_module_2_features) data.scope_module_2_features = [];
+      if (!data.scope_module_3_features) data.scope_module_3_features = [];
+      if (!data.scope_module_4_features) data.scope_module_4_features = [];
+
+      // Generate Supabase Share Link
+      const { nanoid } = await import('nanoid');
+      const newShareId = nanoid(6);
+      
+      try {
+        const { supabase } = await import('../utils/supabase');
+        const { error } = await supabase.from('proposals').insert({
+          id: newShareId,
+          data: data
+        });
+        if (error) throw error;
+        setShareId(newShareId);
+        localStorage.setItem('proposal_share_id', newShareId);
+      } catch (e) {
+        console.error("Failed to save to Supabase", e);
+      }
       
       setFormData(data);
       setDirection(1);
       setStep(1);
     } catch (error) {
       console.error(error);
-      alert('Failed to process text. Is the backend running?');
+      toast.error('Failed to process text. Is the backend running?');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (field: keyof ProposalData, value: string | string[]) => {
+  const handleGenerateShareLink = async () => {
+    if (!formData) return null;
+    const { nanoid } = await import('nanoid');
+    const newShareId = nanoid(6);
+    
+    try {
+      const { supabase } = await import('../utils/supabase');
+      const { error } = await supabase.from('proposals').insert({
+        id: newShareId,
+        data: formData
+      });
+      if (error) throw error;
+      setShareId(newShareId);
+      localStorage.setItem('proposal_share_id', newShareId);
+      toast.success('Share link generated!');
+      return newShareId;
+    } catch (e) {
+      console.error("Failed to save to Supabase", e);
+      toast.error('Failed to generate link');
+      return null;
+    }
+  };
+
+  const handleInputChange = async (field: keyof ProposalData, value: unknown) => {
     if (!formData) return;
-    setFormData(prev => ({ ...prev!, [field]: value }));
+    const newData = { ...formData, [field]: value };
+    setFormData(newData as any);
+    
+    if (shareId) {
+      try {
+        const { supabase } = await import('../utils/supabase');
+        supabase.from('proposals').update({ 
+          data: newData, 
+          last_saved: new Date().toISOString() 
+        }).eq('id', shareId);
+      } catch(e) {}
+    }
   };
 
   const downloadPDF = async () => {
@@ -113,7 +224,7 @@ export default function App() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Proposal_${formData?.client_name?.replace(/\\s+/g, '_') || 'Appspine'}.pdf`;
+      a.download = `Proposal_${formData?.client_name?.replace(/\s+/g, '_') || 'Appspine'}.pdf`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -167,6 +278,7 @@ export default function App() {
 
   return (
     <div className="flex h-[100dvh] w-full bg-white overflow-hidden">
+      <Toaster position="top-center" />
       
       {/* 1. Left Sidebar (Desktop Only) */}
       <Sidebar 
@@ -179,29 +291,42 @@ export default function App() {
       />
 
       {/* 2. Center Panel (Edit Form or Success Screen) */}
-      {step === 4 ? (
-        <SuccessScreen 
-          formData={formData} 
-          downloadPDF={downloadPDF} 
-          shareWhatsApp={shareWhatsApp} 
-          reset={handleReset} 
-          isDownloading={isDownloading}
-          prevStep={prevStep}
+      <div 
+        style={{ width: typeof window !== 'undefined' && window.innerWidth >= 768 ? `${editWidth}px` : '100%' }}
+        className="flex-1 md:flex-none flex flex-col relative bg-white border-r border-gray-200"
+      >
+        {step === 4 ? (
+          <SuccessScreen 
+            formData={formData} 
+            downloadPDF={downloadPDF} 
+            shareWhatsApp={shareWhatsApp} 
+            reset={handleReset} 
+            isDownloading={isDownloading}
+            prevStep={prevStep}
+            shareId={shareId}
+            onGenerateShare={handleGenerateShareLink}
+          />
+        ) : (
+          <EditForm 
+            step={step} 
+            direction={direction} 
+            formData={formData} 
+            handleInputChange={handleInputChange} 
+            nextStep={nextStep} 
+            prevStep={prevStep} 
+            setStep={setStep}
+            downloadPDF={downloadPDF}
+            shareWhatsApp={shareWhatsApp}
+            iframeRef={iframeRef}
+          />
+        )}
+        
+        {/* Dragger Handle (Desktop Only) */}
+        <div
+          onMouseDown={handleDragStart}
+          className="hidden md:block absolute right-[-4px] top-0 w-2 h-full cursor-col-resize hover:bg-[#1a56c4] z-50 transition-colors opacity-0 hover:opacity-100 pointer-events-auto"
         />
-      ) : (
-        <EditForm 
-          step={step} 
-          direction={direction} 
-          formData={formData} 
-          handleInputChange={handleInputChange} 
-          nextStep={nextStep} 
-          prevStep={prevStep} 
-          setStep={setStep}
-          downloadPDF={downloadPDF}
-          shareWhatsApp={shareWhatsApp}
-          iframeRef={iframeRef}
-        />
-      )}
+      </div>
 
       {/* 3. Right Panel / Mobile Bottom Sheet (Live Preview) */}
       <LivePreview 
@@ -213,6 +338,9 @@ export default function App() {
         showMobileSheet={showMobileSheet} 
         setShowMobileSheet={setShowMobileSheet} 
         isDownloading={isDownloading}
+        reset={handleReset}
+        shareId={shareId}
+        onGenerateShare={handleGenerateShareLink}
       />
       
     </div>

@@ -6,7 +6,7 @@ interface AIFieldProps {
   field: keyof ProposalData;
   isTextArea?: boolean;
   formData: ProposalData | null;
-  handleInputChange: (field: keyof ProposalData, value: string | string[]) => void;
+  handleInputChange: (field: keyof ProposalData, value: unknown) => void;
   type?: 'text' | 'number' | 'tags' | 'select';
   options?: string[]; // for select
   prefix?: string; // e.g. "₹"
@@ -33,7 +33,7 @@ export default function AIField({
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && tagInput.trim()) {
       e.preventDefault();
-      const currentTags = Array.isArray(value) ? value : [];
+      const currentTags = (Array.isArray(value) ? value : []) as string[];
       if (!currentTags.includes(tagInput.trim())) {
         handleInputChange(field, [...currentTags, tagInput.trim()]);
       }
@@ -43,7 +43,7 @@ export default function AIField({
 
   const removeTag = (tagToRemove: string) => {
     if (!Array.isArray(value)) return;
-    handleInputChange(field, value.filter(t => t !== tagToRemove));
+    handleInputChange(field, (value as string[]).filter(t => t !== tagToRemove));
   };
 
   return (
@@ -75,12 +75,14 @@ export default function AIField({
         </select>
       ) : type === 'tags' ? (
         <div className="min-h-[44px] md:h-auto p-2 border-[1.5px] border-[#e2e8f0] rounded-[10px] bg-white focus-within:border-[#1a56c4] focus-within:shadow-[0_0_0_3px_rgba(26,86,196,0.12)] transition-all flex flex-wrap gap-2 items-center">
-          {Array.isArray(value) && value.map(tag => (
-            <span key={tag} className="flex items-center bg-[#eff6ff] text-[#1a56c4] text-[13px] px-2 py-1 rounded-md border border-blue-100">
-              {tag}
-              <button onClick={() => removeTag(tag)} className="ml-1 text-[#1a56c4] hover:text-red-500 font-bold px-1">×</button>
-            </span>
-          ))}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {(Array.isArray(value) ? value as string[] : []).map((tag, idx) => (
+              <span key={idx} className="bg-gray-100 text-gray-700 text-[12px] font-medium px-3 py-1 rounded-full flex items-center">
+                {tag}
+                <button onClick={() => removeTag(tag)} className="ml-2 text-gray-400 hover:text-red-500 font-bold px-1">×</button>
+              </span>
+            ))}
+          </div>
           <input
             type="text"
             value={tagInput}

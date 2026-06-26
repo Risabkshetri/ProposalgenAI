@@ -15,8 +15,6 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://9f64-2401-4900-be81-d366-11cb-352-46cd-1537.ngrok-free.app",
-        "*"
     ],
     allow_credentials=False,
     allow_methods=["*"],
@@ -43,6 +41,7 @@ async def generate_pdf(request: PDFRequest):
     """
     Generates a PDF using WeasyPrint for perfect 1:1 copies of the HTML.
     """
+    import traceback
     try:
         pdf_bytes = create_pdf(request.html_content, base_url=request.base_url)
         return Response(
@@ -51,6 +50,9 @@ async def generate_pdf(request: PDFRequest):
             headers={"Content-Disposition": "attachment; filename=AgentIO_Proposal.pdf"}
         )
     except Exception as e:
+        print(f"\n{'='*60}\nPDF GENERATION ERROR:\n{'='*60}")
+        traceback.print_exc()
+        print(f"{'='*60}\n")
         raise HTTPException(status_code=500, detail=f"PDF Generation failed: {str(e)}")
 
 @app.get("/health")
